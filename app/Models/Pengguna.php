@@ -6,54 +6,68 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Notifications\Notifiable; // Added if you plan to use notifications
 
 class Pengguna extends Authenticatable
 {
-    use HasFactory;
+    use HasFactory, Notifiable; // Added Notifiable
 
-    // Specify the table name
+    // Specify the table name if it doesn't match Laravel's pluralization
     protected $table = 'pengguna';
 
     // Disable timestamps if your table doesn't have created_at and updated_at columns
     public $timestamps = false;
 
-    // Define the fillable attributes
+    /**
+     * The attributes that are mass assignable.
+     *
+     * @var array<int, string>
+     */
     protected $fillable = [
         'id_peran',
         'nama_lengkap',
         'username',
-        'email', // Make sure 'email' is here
-        'password_hash',
+        'email', // Ensure 'email' is here
+        'password_hash', // ENSURE password_hash IS FILLABLE
     ];
 
-    // The attributes that should be hidden for serialization.
+    /**
+     * The attributes that should be hidden for serialization.
+     *
+     * @var array<int, string>
+     */
     protected $hidden = [
-        'password_hash',
+        'password_hash', // Hide password_hash from serialization
         // 'password', // If you cast 'password_hash' to 'password'
     ];
 
-    // The attributes that should be cast.
+    /**
+     * The attributes that should be cast.
+     *
+     * @var array<string, string>
+     */
     protected $casts = [
-        // Add email_verified_at if you implement email verification
-        // 'email_verified_at' => 'datetime',
-        // 'password_hash' => 'hashed', // Optional: If you want to use Laravel's hashing cast
+        // 'email_verified_at' => 'datetime', // Uncomment if you add email verification
+        // 'password_hash' => 'hashed', // Optional: Use Laravel's hashing cast if preferred (alternative to dehydrateStateUsing)
     ];
 
-    // Override the getAuthPassword method if your password column is not 'password'
+    /**
+     * Get the password for the user.
+     *
+     * @return string
+     */
     public function getAuthPassword(): string
     {
         return $this->password_hash;
     }
 
-    // {{change 1}}
     /**
      * Get the user's name for display purposes in Filament.
      */
     public function getNameAttribute(): string
     {
-        return $this->nama_lengkap; // Or $this->username if you prefer displaying the username
+        return $this->nama_lengkap; // Or $this->username
     }
-    // {{end change 1}}
 
     /**
      * Get the peran that owns the pengguna.
@@ -79,7 +93,9 @@ class Pengguna extends Authenticatable
         return $this->hasMany(LogAktivitas::class, 'id_pengguna');
     }
 
-    // You might need to implement the Authenticatable contract methods
-    // if you extend a different base class or customize authentication further.
-    // For example, getEmailForPasswordReset, sendPasswordResetNotification, etc.
+    // If you implement password reset, you might need this:
+    // public function sendPasswordResetNotification($token): void
+    // {
+    //     $this->notify(new \App\Notifications\ResetPasswordNotification($token)); // Example notification
+    // }
 }
