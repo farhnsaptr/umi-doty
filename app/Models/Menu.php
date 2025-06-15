@@ -17,20 +17,30 @@ class Menu extends Model
     // Disable timestamps if your table doesn't have created_at and updated_at columns
     public $timestamps = false;
 
-    // Define the fillable attributes
+    // {{change 1}}
+    // Define the fillable attributes, including the new status_menu
     protected $fillable = [
         'id_kategori',
         'nama_menu',
         'deskripsi',
         'harga',
         'dapat_dicustom',
+        'status_menu', // Added the new status_menu column
     ];
+    // {{end change 1}}
 
+
+    // {{change 2}}
     // The attributes that should be cast.
     protected $casts = [
         'harga' => 'decimal:2',
         'dapat_dicustom' => 'boolean',
+        'status_menu' => 'string', // Cast status_menu to string for easier handling
+        // Optional: You could create a PHP Enum for status_menu and cast to that here
+        // 'status_menu' => \App\Enums\MenuStatus::class,
     ];
+    // {{end change 2}}
+
 
     /**
      * Get the kategori that owns the menu.
