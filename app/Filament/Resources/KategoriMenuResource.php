@@ -15,11 +15,15 @@ class KategoriMenuResource extends Resource
 {
     protected static ?string $model = KategoriMenu::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-tag'; // Using a tag icon, feel free to change
+    protected static ?string $navigationIcon = 'heroicon-o-tag';
     protected static ?string $navigationLabel = 'Kategori Menu';
     protected static ?string $pluralModelLabel = 'Kategori Menu';
     protected static ?string $modelLabel = 'Kategori Menu';
-    protected static ?int $navigationSort = 2; // Optional: Define order in sidebar
+    // {{change 1}}
+    protected static ?string $navigationGroup = 'Manajemen Menu'; // Assign to 'Manajemen Menu' group
+    protected static ?int $navigationSort = 1; // Optional: Order within the group (e.g., Kategori first)
+    // {{end change 1}}
+
 
     public static function form(Form $form): Form
     {
@@ -28,7 +32,7 @@ class KategoriMenuResource extends Resource
                 Forms\Components\TextInput::make('nama_kategori')
                     ->label('Nama Kategori')
                     ->required()
-                    ->unique(ignoreRecord: true) // Ensure category names are unique
+                    ->unique(ignoreRecord: true)
                     ->maxLength(100),
             ]);
     }
@@ -42,11 +46,11 @@ class KategoriMenuResource extends Resource
                     ->sortable(),
                 Tables\Columns\TextColumn::make('nama_kategori')
                     ->label('Nama Kategori')
-                    ->searchable() // Allow searching by category name
+                    ->searchable()
                     ->sortable(),
             ])
             ->filters([
-                // Add filters if needed
+                //
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),
@@ -62,10 +66,7 @@ class KategoriMenuResource extends Resource
     public static function getRelations(): array
     {
         return [
-            // You can add a relation manager here to list Menu items
-            // belonging to this category. You would first need to create
-            // a MenuRelationManager.
-            // RelationManagers\MenuRelationManager::class,
+            //
         ];
     }
 
@@ -77,19 +78,4 @@ class KategoriMenuResource extends Resource
             'edit' => \App\Filament\Resources\KategoriMenuResource\Pages\EditKategoriMenu::route('/{record}/edit'),
         ];
     }
-
-    // Optional: Enable global search for this resource
-    // public static function isGlobalSearchable(): bool
-    // {
-    //     return true;
-    // }
-
-    // Optional: Define attributes for global search results
-    // protected static array $globalSearchResultAttributes = ['nama_kategori'];
-
-    // Optional: Customize global search result title
-    // public static function getGlobalSearchResultTitle(\Illuminate\Database\Eloquent\Model $record): string
-    // {
-    //     return $record->nama_kategori;
-    // }
 }

@@ -22,7 +22,11 @@ class MenuResource extends Resource
     protected static ?string $navigationLabel = 'Menu';
     protected static ?string $pluralModelLabel = 'Menu';
     protected static ?string $modelLabel = 'Menu';
-    protected static ?int $navigationSort = 3;
+    // {{change 1}}
+    protected static ?string $navigationGroup = 'Manajemen Menu'; // Assign to 'Manajemen Menu' group
+    protected static ?int $navigationSort = 2; // Optional: Order within the group (e.g., Menu second)
+    // {{end change 1}}
+
 
     public static function form(Form $form): Form
     {
@@ -74,7 +78,7 @@ class MenuResource extends Resource
                     ->live()
                     ->columnSpanFull(),
 
-                // --- Repeater for Varian Menu ---
+
                 Forms\Components\Repeater::make('varian')
                     ->label('Varian Menu')
                     ->relationship('varian')
@@ -94,11 +98,7 @@ class MenuResource extends Resource
                     ->collapsed()
                     ->visible(fn (Forms\Get $get): bool => (bool) $get('dapat_dicustom'))
                     ->cloneable()
-                    // {{change 1}}
-                    // Use itemLabel() to set the header text for each repeater item
                     ->itemLabel(fn (array $state): ?string => filled($state['nama_varian']) ? $state['nama_varian'] : 'Nama Varian Belum Diisi'),
-                    // {{end change 1}}
-                // --- End Repeater ---
 
             ]);
     }
