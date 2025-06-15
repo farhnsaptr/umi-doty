@@ -2,6 +2,11 @@
 
 namespace App\Models;
 
+use App\Models\Pengguna;
+use App\Models\Pelanggan;
+use App\Models\DetailPesanan;
+use App\Models\Pengantaran;
+use App\Models\JurnalKeuangan;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -35,10 +40,10 @@ class Pesanan extends Model
     protected $casts = [
         'waktu_pesanan' => 'datetime',
         'total_harga' => 'decimal:2',
-        'jenis_pesanan' => \App\Enums\JenisPesanan::class, // Example: If you create Enums
-        'metode_pembayaran' => \App\Enums\MetodePembayaran::class, // Example: If you create Enums
-        'status_pembayaran' => \App\Enums\StatusPembayaran::class, // Example: If you create Enums
-        'status_pesanan' => \App\Enums\StatusPesanan::class, // Example: If you create Enums
+        // 'jenis_pesanan' => \App\Enums\JenisPesanan::class, // Example: If you create Enums
+        // 'metode_pembayaran' => \App\Enums\MetodePembayaran::class, // Example: If you create Enums
+        // 'status_pembayaran' => \App\Enums\StatusPembayaran::class, // Example: If you create Enums
+        // 'status_pesanan' => \App\Enums\StatusPesanan::class, // Example: If you create Enums
     ];
 
     /**
