@@ -6,41 +6,33 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\MorphMany; // Import MorphMany
 
 class Menu extends Model
 {
     use HasFactory;
 
-    // Specify the table name
     protected $table = 'menu';
-
-    // Disable timestamps if your table doesn't have created_at and updated_at columns
+    // Assuming your migration includes created_at and updated_at
     public $timestamps = false;
 
-    // {{change 1}}
-    // Define the fillable attributes, including the new status_menu
     protected $fillable = [
         'id_kategori',
         'nama_menu',
         'deskripsi',
         'harga',
         'dapat_dicustom',
-        'status_menu', // Added the new status_menu column
+        'status_menu',
+        // 'slug', // Uncomment if added
     ];
-    // {{end change 1}}
 
-
-    // {{change 2}}
-    // The attributes that should be cast.
     protected $casts = [
         'harga' => 'decimal:2',
         'dapat_dicustom' => 'boolean',
-        'status_menu' => 'string', // Cast status_menu to string for easier handling
-        // Optional: You could create a PHP Enum for status_menu and cast to that here
-        // 'status_menu' => \App\Enums\MenuStatus::class,
+        'status_menu' => 'string', // Or your Enum class
+        // 'created_at' => 'datetime', // Uncomment if added
+        // 'updated_at' => 'datetime', // Uncomment if added
     ];
-    // {{end change 2}}
-
 
     /**
      * Get the kategori that owns the menu.
@@ -64,5 +56,17 @@ class Menu extends Model
     public function detailPesanan(): HasMany
     {
         return $this->hasMany(DetailPesanan::class, 'id_menu');
+    }
+
+    /**
+     * Get the files associated with the menu (e.g., photos).
+     * MorphMany relationship: This Menu model is the parent ('fileable')
+     * of multiple File models.
+     * The method name 'files' MUST match FileUpload::make('files') in the Resource.
+     * The morph name 'fileable' MUST match the morphs() in the migration and morphTo() in File model.
+     */
+    public function files(): MorphMany
+    {
+        return $this->morphMany(File::class, 'fileable'); // Ensure 'fileable' is correct morph name
     }
 }
