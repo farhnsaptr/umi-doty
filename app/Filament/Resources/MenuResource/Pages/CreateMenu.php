@@ -13,18 +13,18 @@ class CreateMenu extends CreateRecord
 {
     protected static string $resource = MenuResource::class;
 
-    // Remove any previous debugging or custom methods
+    // Remove any previous debugging or custom methods like dd()
 
     /**
      * Handles the creation of the record.
      * Manually processes and saves the file uploads using the relationship.
+     * This is a workaround because automatic saving wasn't working reliably.
      */
     protected function handleRecordCreation(array $data): Model
     {
-        Log::info('Handling Menu Creation', ['data_keys' => array_keys($data)]);
+        Log::info('Handling Menu Creation (Manual Save)', ['data_keys' => array_keys($data)]);
 
-        // Extract file data from the data array
-        // Filament's FileUpload component with multiple() puts an array of paths here
+        // Extract file data before creating the main record
         $filesData = $data['files'] ?? null;
         unset($data['files']); // Remove 'files' from the data array for the main record creation
 
@@ -37,16 +37,12 @@ class CreateMenu extends CreateRecord
         if ($filesData && is_array($filesData)) {
             Log::info('Processing uploaded files for manual saving.');
 
-            // {{change 1}}
-            // Use the hardcoded disk name as defined in MenuResource's FileUpload
-            $diskName = 'public';
-            // {{end change 1}}
+            $diskName = 'public'; // Use the hardcoded disk name from the Resource configuration
 
             foreach ($filesData as $filePath) {
                  Log::info('Attempting manual File record creation for path:', ['path' => $filePath, 'disk' => $diskName]);
                 try {
-                    // $filePath is already the path relative to the disk/directory, e.g., "menu-photos/filename.png"
-                    $fullDiskPath = $filePath;
+                    $fullDiskPath = $filePath; // Path is relative to disk/directory
 
                     if (Storage::disk($diskName)->exists($fullDiskPath)) {
                         $fileName = basename($fullDiskPath);
@@ -62,13 +58,11 @@ class CreateMenu extends CreateRecord
                             'fileable_type' => get_class($menu),
                          ]);
 
-                        // Create a new File model record using the polymorphic relationship
                         $menu->files()->create([
                             'filename' => $fileName,
                             'path' => $fullDiskPath,
                             'mime_type' => $mimeType,
                             'size' => $fileSize,
-                            // fileable_id and fileable_type are automatically set by $menu->files()->create()
                         ]);
                         Log::info('File model record created successfully manually for path:', ['path' => $fullDiskPath]);
                     } else {
@@ -86,7 +80,6 @@ class CreateMenu extends CreateRecord
                             'line' => $e->getLine(),
                         ],
                     ]);
-                    // Consider adding a notification here
                      \Filament\Notifications\Notification::make()
                         ->title('Error saving file')
                         ->body('Could not save database record for uploaded file.')
